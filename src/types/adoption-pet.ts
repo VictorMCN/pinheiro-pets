@@ -1,0 +1,21 @@
+export type AdoptionPet = {
+  id: string;
+  author_id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  age: string | null;
+  sex: string | null;
+  size: string | null;
+  vaccinated: boolean;
+  neutered: boolean;
+  description: string;
+  administrative_region: string;
+  contact_name: string;
+  contact_phone: string;
+  image_url: string | null;
+  image_path: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  created_at: string;
+  updated_at: string;
+};
