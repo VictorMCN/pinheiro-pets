@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoginForm } from "@/components/auth/LoginForm";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 
@@ -22,50 +23,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="mt-8 space-y-5">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-slate-700"
-              >
-                E-mail
-              </label>
-
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="seuemail@exemplo.com"
-                className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-slate-700"
-              >
-                Senha
-              </label>
-
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Digite sua senha"
-                className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
-              />
-            </div>
-
-            <button
-              type="button"
-              className="w-full rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800"
-            >
-              Entrar
-            </button>
-          </form>
+          <LoginForm />
 
           <div className="mt-8 border-t border-slate-200 pt-6 text-center">
             <p className="text-sm text-slate-600">

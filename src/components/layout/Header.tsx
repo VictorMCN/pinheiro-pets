@@ -1,6 +1,20 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
-export function Header() {
+export async function Header() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const name =
+    typeof user?.user_metadata?.name === "string"
+      ? user.user_metadata.name
+      : "";
+
+  const initial = name.trim().charAt(0).toUpperCase() || "U";
+
   return (
     <header className="border-b border-emerald-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -41,12 +55,23 @@ export function Header() {
           </Link>
         </nav>
 
-        <Link
-          href="/login"
-          className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
-        >
-          Entrar
-        </Link>
+        {user ? (
+          <Link
+            href="/conta"
+            aria-label="Minha conta"
+            title={name || "Minha conta"}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white transition hover:bg-emerald-800"
+          >
+            {initial}
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
+          >
+            Entrar
+          </Link>
+        )}
       </div>
     </header>
   );
