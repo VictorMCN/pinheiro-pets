@@ -2,10 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+
 import { administrativeRegions } from "@/lib/constants/administrative-regions";
 import { createClient } from "@/lib/supabase/client";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_PENDING_PUBLICATIONS = 2;
 
 const allowedImageTypes = [
   "image/jpeg",
@@ -13,10 +15,20 @@ const allowedImageTypes = [
   "image/webp",
 ];
 
-export function LostPetForm() {
+type LostPetFormProps = {
+  initialPendingCount: number;
+};
+
+export function LostPetForm({
+  initialPendingCount,
+}: LostPetFormProps) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [pendingCount, setPendingCount] = useState(
+    initialPendingCount,
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -55,7 +67,53 @@ export function LostPetForm() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      setError("Você precisa estar autenticado para criar uma publicação.");
+      setError(
+        "Você precisa estar autenticado para criar uma publicação.",
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    /*
+     * Check the current number of pending publications again.
+     *
+     * The page already performs this check on the server, but this
+     * second verification prevents stale pages or multiple browser
+     * tabs from uploading an unnecessary image.
+     *
+     * The database trigger remains the final security layer.
+     */
+    const {
+      count: currentPendingCount,
+      error: pendingCountError,
+    } = await supabase
+      .from("lost_pets")
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
+      .eq("author_id", user.id)
+      .eq("status", "PENDING");
+
+    if (pendingCountError) {
+      setError(
+        "Não foi possível verificar suas solicitações pendentes. Tente novamente.",
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    const verifiedPendingCount = currentPendingCount ?? 0;
+
+    setPendingCount(verifiedPendingCount);
+
+    if (
+      verifiedPendingCount >= MAX_PENDING_PUBLICATIONS
+    ) {
+      setError(
+        `Você já possui ${MAX_PENDING_PUBLICATIONS} publicações aguardando análise. Aguarde a moderação antes de enviar uma nova solicitação.`,
+      );
+
       setIsLoading(false);
       return;
     }
@@ -84,20 +142,34 @@ export function LostPetForm() {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from("lost-pets").getPublicUrl(imagePath);
+    } = supabase.storage
+      .from("lost-pets")
+      .getPublicUrl(imagePath);
 
     const { error: insertError } = await supabase
       .from("lost_pets")
       .insert({
         author_id: user.id,
         name: String(formData.get("name") ?? "").trim(),
-        species: String(formData.get("species") ?? "").trim(),
-        breed: String(formData.get("breed") ?? "").trim() || null,
-        sex: String(formData.get("sex") ?? "").trim() || null,
-        color: String(formData.get("color") ?? "").trim() || null,
-        size: String(formData.get("size") ?? "").trim() || null,
+        species: String(
+          formData.get("species") ?? "",
+        ).trim(),
+        breed:
+          String(formData.get("breed") ?? "").trim() ||
+          null,
+        sex:
+          String(formData.get("sex") ?? "").trim() ||
+          null,
+        color:
+          String(formData.get("color") ?? "").trim() ||
+          null,
+        size:
+          String(formData.get("size") ?? "").trim() ||
+          null,
         description:
-          String(formData.get("description") ?? "").trim() || null,
+          String(
+            formData.get("description") ?? "",
+          ).trim() || null,
         administrative_region: String(
           formData.get("administrativeRegion") ?? "",
         ).trim(),
@@ -107,27 +179,60 @@ export function LostPetForm() {
         disappeared_at: String(
           formData.get("disappearedAt") ?? "",
         ).trim(),
-        contact_name: String(formData.get("contactName") ?? "").trim(),
-        contact_phone: String(formData.get("contactPhone") ?? "").trim(),
+        contact_name: String(
+          formData.get("contactName") ?? "",
+        ).trim(),
+        contact_phone: String(
+          formData.get("contactPhone") ?? "",
+        ).trim(),
         image_url: publicUrl,
         image_path: imagePath,
         status: "PENDING",
       });
 
     if (insertError) {
-      await supabase.storage.from("lost-pets").remove([imagePath]);
+      /*
+       * Remove the uploaded image when the database refuses the
+       * publication. This avoids orphaned files in Storage.
+       */
+      await supabase.storage
+        .from("lost-pets")
+        .remove([imagePath]);
 
-      setError("Não foi possível enviar a publicação. Tente novamente.");
+      if (
+        insertError.message.includes(
+          "at most 2 pending lost pet publications",
+        )
+      ) {
+        setPendingCount(MAX_PENDING_PUBLICATIONS);
+
+        setError(
+          `Você já possui ${MAX_PENDING_PUBLICATIONS} publicações aguardando análise. Aguarde a moderação antes de enviar uma nova solicitação.`,
+        );
+      } else {
+        setError(
+          "Não foi possível enviar a publicação. Tente novamente.",
+        );
+      }
+
       setIsLoading(false);
       return;
     }
 
     form.reset();
+
+    setPendingCount(
+      verifiedPendingCount + 1,
+    );
+
     setIsSubmitted(true);
     setIsLoading(false);
   }
 
   if (isSubmitted) {
+    const hasReachedPendingLimit =
+      pendingCount >= MAX_PENDING_PUBLICATIONS;
+
     return (
       <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-8">
         <p className="text-lg font-bold text-emerald-800">
@@ -139,20 +244,35 @@ export function LostPetForm() {
           pendentes até a análise de um administrador.
         </p>
 
+        {hasReachedPendingLimit && (
+          <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p className="font-semibold text-amber-900">
+              Você atingiu o limite de solicitações pendentes.
+            </p>
+
+            <p className="mt-2 text-sm leading-6 text-amber-800">
+              Aguarde a análise de uma das suas publicações antes de
+              cadastrar outro animal desaparecido.
+            </p>
+          </div>
+        )}
+
         <div className="mt-6 flex flex-wrap gap-4">
-          <button
-            type="button"
-            onClick={() => setIsSubmitted(false)}
-            className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800"
-          >
-            Cadastrar outro pet
-          </button>
+          {!hasReachedPendingLimit && (
+            <button
+              type="button"
+              onClick={() => setIsSubmitted(false)}
+              className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800"
+            >
+              Cadastrar outro pet
+            </button>
+          )}
 
           <Link
-            href="/perdidos"
+            href="/conta"
             className="rounded-xl border border-emerald-700 px-5 py-3 font-semibold text-emerald-700 hover:bg-emerald-100"
           >
-            Ver pets perdidos
+            Ver minhas publicações
           </Link>
         </div>
       </div>
@@ -161,6 +281,18 @@ export function LostPetForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <p className="text-sm font-semibold text-slate-700">
+          Solicitações aguardando análise:{" "}
+          {pendingCount}/{MAX_PENDING_PUBLICATIONS}
+        </p>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Você pode manter no máximo duas publicações pendentes ao mesmo
+          tempo.
+        </p>
+      </div>
+
       <div className="grid gap-5 md:grid-cols-2">
         <div>
           <label
@@ -437,7 +569,9 @@ export function LostPetForm() {
         disabled={isLoading}
         className="w-full rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isLoading ? "Enviando publicação..." : "Enviar para análise"}
+        {isLoading
+          ? "Enviando publicação..."
+          : "Enviar para análise"}
       </button>
     </form>
   );
