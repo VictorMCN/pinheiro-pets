@@ -1,0 +1,21 @@
+export type LostPet = {
+  id: string;
+  author_id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  sex: string | null;
+  color: string | null;
+  size: string | null;
+  description: string | null;
+  administrative_region: string;
+  last_seen_location: string;
+  disappeared_at: string;
+  contact_name: string;
+  contact_phone: string;
+  image_url: string | null;
+  image_path: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  created_at: string;
+  updated_at: string;
+};
