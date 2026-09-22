@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { AdminAdoptionPetCard } from "@/components/admin/AdminAdoptionPetCard";
 import { AdminLostPetCard } from "@/components/admin/AdminLostPetCard";
+import { AdminNgoCard } from "@/components/admin/AdminNgoCard";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -10,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { AdoptionPet } from "@/types/adoption-pet";
 import type { LostPet } from "@/types/lost-pet";
+import type { Ngo } from "@/types/ngo";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -58,11 +60,24 @@ export default async function AdminPage() {
       ascending: false,
     });
 
+  const {
+    data: ngoData,
+    error: ngoError,
+  } = await supabase
+    .from("ngos")
+    .select("*")
+    .order("created_at", {
+      ascending: false,
+    });
+
   const lostPets =
     (lostPetData ?? []) as LostPet[];
 
   const adoptionPets =
     (adoptionPetData ?? []) as AdoptionPet[];
+
+  const ngos =
+    (ngoData ?? []) as Ngo[];
 
   const pendingLostPets =
     lostPets.filter(
@@ -94,9 +109,25 @@ export default async function AdminPage() {
       (pet) => pet.status === "REJECTED",
     );
 
+  const pendingNgos =
+    ngos.filter(
+      (ngo) => ngo.status === "PENDING",
+    );
+
+  const approvedNgos =
+    ngos.filter(
+      (ngo) => ngo.status === "APPROVED",
+    );
+
+  const rejectedNgos =
+    ngos.filter(
+      (ngo) => ngo.status === "REJECTED",
+    );
+
   const hasError =
     Boolean(lostPetError) ||
-    Boolean(adoptionPetError);
+    Boolean(adoptionPetError) ||
+    Boolean(ngoError);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -235,7 +266,7 @@ export default async function AdminPage() {
 
             {/* Adoção */}
 
-            <section>
+            <section className="mb-20">
               <div className="mb-8 border-t border-slate-200 pt-16">
                 <p className="font-semibold text-emerald-700">
                   Adoção
@@ -335,6 +366,115 @@ export default async function AdminPage() {
                       <AdminAdoptionPetCard
                         key={pet.id}
                         pet={pet}
+                      />
+                    ))
+                  )}
+                </div>
+              </section>
+            </section>
+
+            {/* ONGs */}
+
+            <section>
+              <div className="mb-8 border-t border-slate-200 pt-16">
+                <p className="font-semibold text-emerald-700">
+                  ONGs e projetos
+                </p>
+
+                <h2 className="mt-1 text-3xl font-bold">
+                  Moderação de organizações
+                </h2>
+              </div>
+
+              <div className="mb-10 grid gap-6 sm:grid-cols-3">
+                <div className="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
+                  <p className="font-semibold text-slate-600">
+                    Pendentes
+                  </p>
+
+                  <p className="mt-3 text-4xl font-bold text-amber-700">
+                    {pendingNgos.length}
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-emerald-200 bg-white p-6 shadow-sm">
+                  <p className="font-semibold text-slate-600">
+                    Aprovadas
+                  </p>
+
+                  <p className="mt-3 text-4xl font-bold text-emerald-700">
+                    {approvedNgos.length}
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-red-200 bg-white p-6 shadow-sm">
+                  <p className="font-semibold text-slate-600">
+                    Rejeitadas
+                  </p>
+
+                  <p className="mt-3 text-4xl font-bold text-red-700">
+                    {rejectedNgos.length}
+                  </p>
+                </div>
+              </div>
+
+              <section className="mb-12">
+                <h3 className="text-2xl font-bold">
+                  Solicitações pendentes
+                </h3>
+
+                <div className="mt-6 space-y-5">
+                  {pendingNgos.length === 0 ? (
+                    <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+                      Nenhuma organização aguardando análise.
+                    </div>
+                  ) : (
+                    pendingNgos.map((ngo) => (
+                      <AdminNgoCard
+                        key={ngo.id}
+                        ngo={ngo}
+                      />
+                    ))
+                  )}
+                </div>
+              </section>
+
+              <section className="mb-12">
+                <h3 className="text-2xl font-bold">
+                  Organizações aprovadas
+                </h3>
+
+                <div className="mt-6 space-y-5">
+                  {approvedNgos.length === 0 ? (
+                    <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+                      Nenhuma organização aprovada.
+                    </div>
+                  ) : (
+                    approvedNgos.map((ngo) => (
+                      <AdminNgoCard
+                        key={ngo.id}
+                        ngo={ngo}
+                      />
+                    ))
+                  )}
+                </div>
+              </section>
+
+              <section>
+                <h3 className="text-2xl font-bold">
+                  Organizações rejeitadas
+                </h3>
+
+                <div className="mt-6 space-y-5">
+                  {rejectedNgos.length === 0 ? (
+                    <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+                      Nenhuma organização rejeitada.
+                    </div>
+                  ) : (
+                    rejectedNgos.map((ngo) => (
+                      <AdminNgoCard
+                        key={ngo.id}
+                        ngo={ngo}
                       />
                     ))
                   )}

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { DeleteAdoptionPetButton } from "@/components/adoption/DeleteAdoptionPetButton";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { DeleteLostPetButton } from "@/components/lost-pets/DeleteLostPetButton";
+import { DeleteNgoButton } from "@/components/ngos/DeleteNgoButton";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -12,6 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { AdoptionPet } from "@/types/adoption-pet";
 import type { LostPet } from "@/types/lost-pet";
+import type { Ngo } from "@/types/ngo";
 
 const statusLabels = {
   PENDING: {
@@ -24,6 +26,21 @@ const statusLabels = {
   },
   REJECTED: {
     label: "Rejeitado",
+    className: "bg-red-50 text-red-700",
+  },
+} as const;
+
+const ngoStatusLabels = {
+  PENDING: {
+    label: "Pendente",
+    className: "bg-amber-50 text-amber-700",
+  },
+  APPROVED: {
+    label: "Aprovada",
+    className: "bg-emerald-50 text-emerald-700",
+  },
+  REJECTED: {
+    label: "Rejeitada",
     className: "bg-red-50 text-red-700",
   },
 } as const;
@@ -68,10 +85,20 @@ export default async function AccountPage() {
       ascending: false,
     });
 
+  const { data: ngoData } = await supabase
+    .from("ngos")
+    .select("*")
+    .eq("owner_id", user.id)
+    .order("created_at", {
+      ascending: false,
+    });
+
   const lostPets = (lostPetData ?? []) as LostPet[];
 
   const adoptionPets =
     (adoptionPetData ?? []) as AdoptionPet[];
+
+  const ngos = (ngoData ?? []) as Ngo[];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -355,6 +382,129 @@ export default async function AccountPage() {
                       <DeleteAdoptionPetButton
                         petId={pet.id}
                         imagePath={pet.image_path}
+                      />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ONGs */}
+
+        <section className="mt-16 border-t border-slate-200 pt-12">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-semibold text-emerald-700">
+                ONGs e projetos
+              </p>
+
+              <h2 className="mt-1 text-2xl font-bold tracking-tight">
+                Minhas organizações
+              </h2>
+
+              <p className="mt-2 text-slate-600">
+                Acompanhe os cadastros de organizações e projetos
+                enviados por você.
+              </p>
+            </div>
+
+            <Link
+              href="/ongs/novo"
+              className="rounded-full bg-emerald-700 px-5 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
+            >
+              Cadastrar ONG
+            </Link>
+          </div>
+
+          {ngos.length === 0 ? (
+            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 text-center">
+              <p className="font-semibold text-slate-900">
+                Você ainda não cadastrou nenhuma organização.
+              </p>
+
+              <p className="mt-2 text-sm text-slate-600">
+                Seus cadastros aparecerão aqui após o envio.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-4">
+              {ngos.map((ngo) => {
+                const status =
+                  ngoStatusLabels[ngo.status];
+
+                return (
+                  <article
+                    key={ngo.id}
+                    className="flex flex-col gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between"
+                  >
+                    <div className="flex items-center gap-5">
+                      {ngo.logo_url ? (
+                        <div
+                          className="h-20 w-20 shrink-0 rounded-2xl bg-slate-100 bg-contain bg-center bg-no-repeat"
+                          style={{
+                            backgroundImage: `url("${ngo.logo_url}")`,
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-2xl font-bold text-emerald-700">
+                          {ngo.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+
+                      <div>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <h3 className="text-lg font-bold">
+                            {ngo.name}
+                          </h3>
+
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+
+                        <p className="mt-2 text-sm text-slate-600">
+                          {ngo.administrative_region}
+                        </p>
+
+                        <p className="mt-1 text-sm text-slate-500">
+                          Enviado em{" "}
+                          {new Date(
+                            ngo.created_at,
+                          ).toLocaleDateString("pt-BR")}
+                        </p>
+
+                        {ngo.pix_key && (
+                          <span className="mt-2 inline-block rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                            Doações via Pix
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      {ngo.status === "APPROVED" && (
+                        <Link
+                          href={`/ongs/${ngo.id}`}
+                          className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                        >
+                          Ver publicação
+                        </Link>
+                      )}
+
+                      <Link
+                        href={`/ongs/${ngo.id}/editar`}
+                        className="rounded-xl border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                      >
+                        Editar
+                      </Link>
+
+                      <DeleteNgoButton
+                        ngoId={ngo.id}
+                        logoPath={ngo.logo_path}
                       />
                     </div>
                   </article>
