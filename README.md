@@ -1,49 +1,174 @@
 # Pinheiro Pets
 
-Pinheiro Pets is an educational web application developed as a university extension project for the Analysis and Systems Development program.
+![Pinheiro Pets Logo](./public/branding/pinheiro-pets-logo.png)
 
-The project explores how digital technology can support animal protection initiatives and improve access to information for communities in Distrito Federal, Brazil.
+Pinheiro Pets is an educational university extension project built to support the animal protection community in the Federal District of Brazil.
 
-> This project is intended exclusively for educational and demonstration purposes. It is not an official animal protection service or a commercial platform.
+The platform connects local NGOs, independent protectors, volunteers, adopters, and donors through a moderated web system focused on:
 
-## University Extension Context
+- lost pets
+- responsible adoption
+- NGO visibility
+- direct Pix donations
 
-The project is related to **UN Sustainable Development Goal 10 — Reduced Inequalities**, with a focus on digital inclusion and access to technology for the community.
+---
 
-Pinheiro Pets aims to demonstrate a centralized digital platform where local residents, animal protectors, and NGOs can share relevant information without requiring their own technological infrastructure.
+## About the project
 
-## Core Features
+This project was created as an academic extension initiative aligned with:
 
-The planned application includes:
+- **ODS 10 — Reduced Inequalities**
+- **Proposal 03 — Digital inclusion and access to technology for the community**
 
-- Lost pet posts
-- Pet adoption posts
-- NGO profiles and donation information
-- User registration and authentication
-- Administrative approval workflow
-- Content moderation
-- User-owned post management
+Its purpose is to offer a simple and accessible digital solution for a community that often depends on fragmented social media posts to publicize urgent animal-related cases.
 
-All NGO registrations, lost pet posts, adoption posts, and edits to previously approved content require administrative review before becoming publicly available.
+---
 
-Authors can delete their own content at any time.
+## Main features
 
-## Technology Stack
+### Authentication
 
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Supabase
-- PostgreSQL
-- GitHub
-- Vercel
+- user registration and login
+- email confirmation with Supabase Auth
+- account page with personal publication management
+- role-based access for administrators
 
-## Project Status
+### Lost pets
 
-Currently under development.
+- create lost pet submissions
+- upload pet images
+- public listing of approved posts
+- detail page
+- author edit and delete actions
+- moderation status reset after approved content is edited
+- pending submission limit to reduce spam
 
-## Language
+### Adoption
 
-The source code, Git history, and technical documentation are written in English.
+- create adoption posts
+- image upload
+- public listing of approved adoption posts
+- detail page
+- author edit and delete actions
+- moderation flow for approval and rejection
+- pending submission limit
 
-The user interface is written in Brazilian Portuguese because the application is designed around a community use case in Distrito Federal, Brazil.
+### NGOs and donations
+
+- NGO registration requests
+- NGO logo upload
+- public NGO listing
+- NGO detail page
+- Pix donation information
+- owner edit and delete actions
+- moderation flow for approval and rejection
+- pending submission limit
+
+### Admin dashboard
+
+- moderate lost pet posts
+- moderate adoption posts
+- moderate NGO submissions
+- approve or reject pending content
+- delete published or rejected content
+- centralized moderation view
+
+---
+
+## Tech stack
+
+- **Next.js 16**
+- **React**
+- **TypeScript**
+- **Tailwind CSS**
+- **Supabase**
+  - Authentication
+  - PostgreSQL Database
+  - Row Level Security
+  - Storage
+
+---
+
+## Project structure
+
+```bash
+src/
+  app/
+  components/
+  lib/
+  types/
+
+supabase/
+  migrations/
+```
+
+---
+
+## Environment variables
+
+Create a `.env.local` file with:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```
+
+---
+
+## Running locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Run lint:
+
+```bash
+npm run lint
+```
+
+Run production build:
+
+```bash
+npm run build
+```
+
+---
+
+## Database and Supabase
+
+This project uses SQL migrations stored in:
+
+```bash
+supabase/migrations/
+```
+
+These migrations cover:
+
+- schema creation
+- moderation triggers
+- RLS policies
+- storage buckets and policies
+- protection against excessive pending submissions
+
+---
+
+## Educational note
+
+Pinheiro Pets is an **educational project** created for academic purposes.
+
+Although it simulates a real platform structure with authentication, moderation, storage, and deployment flow, it was designed as a learning experience and proof of concept for university extension work.
+
+---
+
+## Author
+
+Developed by **Victor Macene** as part of a university extension project.
