@@ -1,241 +1,248 @@
 import Link from "next/link";
+import Image from "next/image";
+
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 
-const features = [
+const featureCards = [
   {
     title: "Pets perdidos",
     description:
-      "Consulte animais desaparecidos e ajude tutores a reencontrarem seus pets.",
+      "Publique animais desaparecidos, acompanhe solicitações e ajude no reencontro de tutores e pets no Distrito Federal.",
     href: "/perdidos",
-    action: "Ver pets perdidos",
-    icon: "🔎",
+    cta: "Ver pets perdidos",
   },
   {
     title: "Adoção responsável",
     description:
-      "Conheça animais que estão procurando uma nova família e um lar seguro.",
+      "Divulgue animais disponíveis para adoção e facilite a conexão entre protetores, lares temporários e adotantes.",
     href: "/adocao",
-    action: "Conhecer animais",
-    icon: "🐾",
+    cta: "Ver animais para adoção",
   },
   {
-    title: "Apoie uma ONG",
+    title: "ONGs e doações",
     description:
-      "Encontre organizações e protetores locais e conheça formas diretas de contribuir.",
+      "Dê visibilidade a ONGs e protetores locais com informações de contato, Pix e canais de apoio à causa animal.",
     href: "/ongs",
-    action: "Conhecer ONGs",
-    icon: "🤝",
+    cta: "Conhecer ONGs",
   },
 ];
 
 const steps = [
   {
-    number: "01",
     title: "Cadastre-se",
     description:
-      "Crie uma conta gratuita para solicitar publicações na plataforma.",
+      "Crie sua conta para publicar pets perdidos, animais para adoção ou solicitar o cadastro de uma ONG.",
   },
   {
-    number: "02",
-    title: "Envie sua publicação",
+    title: "Envie sua solicitação",
     description:
-      "Cadastre um pet perdido, um animal para adoção ou solicite o cadastro de uma ONG.",
+      "As informações são registradas na plataforma com foto, descrição e dados essenciais.",
   },
   {
-    number: "03",
-    title: "Aguarde a análise",
+    title: "Aguarde a moderação",
     description:
-      "As informações passam por uma revisão administrativa antes de ficarem públicas.",
+      "Toda publicação passa por análise administrativa antes de ser exibida publicamente.",
+  },
+  {
+    title: "Conecte a comunidade",
+    description:
+      "Depois de aprovada, a publicação fica visível para adoção, apoio financeiro ou localização do animal.",
   },
 ];
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header />
 
       <main>
-        <section className="border-b border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
+        <section className="border-b border-emerald-100 bg-white">
+          <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div>
-              <span className="inline-flex rounded-full border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-700">
-                Projeto de extensão universitária
-              </span>
+              <p className="font-semibold text-emerald-700">
+                ODS 10 • Redução das Desigualdades
+              </p>
 
-              <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                Tecnologia para conectar quem cuida, quem procura e quem quer
-                ajudar.
+              <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+                Tecnologia social para fortalecer a causa animal no DF
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                O Pinheiro Pets reúne informações sobre animais perdidos,
-                adoções e organizações de proteção animal do Distrito Federal
-                em um único ambiente digital.
+                O Pinheiro Pets é uma plataforma educacional de extensão
+                universitária criada para conectar comunidade, protetores
+                independentes e ONGs de proteção animal por meio de divulgação,
+                adoção responsável e doações via Pix.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-wrap gap-4">
                 <Link
-                  href="/perdidos"
-                  className="rounded-full bg-emerald-700 px-6 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
+                  href="/cadastro"
+                  className="rounded-xl bg-emerald-700 px-6 py-3 font-semibold text-white transition hover:bg-emerald-800"
                 >
-                  Ver pets perdidos
+                  Criar conta
                 </Link>
 
                 <Link
-                  href="/cadastro"
-                  className="rounded-full border border-emerald-700 bg-white px-6 py-3 text-center font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                  href="/perdidos"
+                  className="rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
-                  Participar da comunidade
+                  Explorar publicações
                 </Link>
+              </div>
+
+              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <p className="text-2xl font-bold text-emerald-700">3</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    frentes principais da plataforma
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <p className="text-2xl font-bold text-emerald-700">100%</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    educacional e gratuita
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <p className="text-2xl font-bold text-emerald-700">DF</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    foco regional na comunidade local
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-sm">
-              <div className="rounded-2xl bg-emerald-700 p-8 text-white">
-                <p className="text-sm font-semibold uppercase tracking-widest text-emerald-100">
-                  Pinheiro Pets
-                </p>
-
-                <h2 className="mt-3 text-3xl font-bold">
-                  Informação centralizada para a causa animal.
-                </h2>
-
-                <p className="mt-4 leading-7 text-emerald-50">
-                  Uma proposta educacional que demonstra como a tecnologia pode
-                  ampliar a visibilidade de protetores, ONGs, animais
-                  desaparecidos e pets disponíveis para adoção.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 pt-4">
-                <div className="rounded-2xl bg-emerald-50 p-4 text-center">
-                  <p className="text-2xl">🔎</p>
-                  <p className="mt-2 text-xs font-semibold text-emerald-900">
-                    Encontrar
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-emerald-50 p-4 text-center">
-                  <p className="text-2xl">🐾</p>
-                  <p className="mt-2 text-xs font-semibold text-emerald-900">
-                    Adotar
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-emerald-50 p-4 text-center">
-                  <p className="text-2xl">🤝</p>
-                  <p className="mt-2 text-xs font-semibold text-emerald-900">
-                    Apoiar
-                  </p>
-                </div>
+            <div className="flex justify-center lg:justify-end">
+              <div className="rounded-[2rem] border border-emerald-100 bg-gradient-to-br from-cyan-50 via-white to-emerald-50 p-6 shadow-sm">
+                <Image
+                  src="/branding/pinheiro-pets-logo.png"
+                  alt="Identidade visual do Pinheiro Pets"
+                  width={420}
+                  height={420}
+                  className="h-auto w-full max-w-sm rounded-3xl"
+                  priority
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-20">
-          <div className="max-w-2xl">
-            <p className="font-semibold text-emerald-700">Como podemos ajudar?</p>
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <div className="max-w-3xl">
+            <p className="font-semibold text-emerald-700">
+              O que você pode fazer aqui
+            </p>
 
-            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Um espaço para diferentes necessidades da comunidade.
+            <h2 className="mt-2 text-3xl font-bold tracking-tight">
+              Uma plataforma simples, organizada e moderada
             </h2>
 
             <p className="mt-4 leading-7 text-slate-600">
-              Navegue pelas áreas públicas da plataforma e encontre informações
-              de forma simples e centralizada.
+              O objetivo do Pinheiro Pets é centralizar informações que
+              normalmente ficam espalhadas em redes sociais, tornando o acesso
+              mais claro para quem precisa ajudar ou encontrar ajuda.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {features.map((feature) => (
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {featureCards.map((card) => (
               <article
-                key={feature.title}
-                className="flex flex-col rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                key={card.title}
+                className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-2xl">
-                  {feature.icon}
-                </div>
+                <h3 className="text-xl font-bold">
+                  {card.title}
+                </h3>
 
-                <h3 className="mt-6 text-xl font-bold">{feature.title}</h3>
-
-                <p className="mt-3 flex-1 leading-7 text-slate-600">
-                  {feature.description}
+                <p className="mt-4 leading-7 text-slate-600">
+                  {card.description}
                 </p>
 
                 <Link
-                  href={feature.href}
-                  className="mt-6 font-semibold text-emerald-700 hover:text-emerald-800"
+                  href={card.href}
+                  className="mt-6 inline-flex font-semibold text-emerald-700 transition hover:text-emerald-800"
                 >
-                  {feature.action} →
+                  {card.cta} →
                 </Link>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="bg-white">
-          <div className="mx-auto max-w-7xl px-6 py-20">
-            <div className="max-w-2xl">
+        <section className="border-y border-emerald-100 bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-16">
+            <div className="max-w-3xl">
               <p className="font-semibold text-emerald-700">
-                Publicações responsáveis
+                Como funciona
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                Como funciona uma publicação?
+              <h2 className="mt-2 text-3xl font-bold tracking-tight">
+                Fluxo pensado para manter a plataforma organizada
               </h2>
 
               <p className="mt-4 leading-7 text-slate-600">
-                Qualquer usuário cadastrado poderá solicitar uma publicação,
-                mas o conteúdo será analisado antes de aparecer publicamente.
+                Toda publicação passa por moderação antes de ficar pública,
+                reduzindo spam, evitando uso mal-intencionado e reforçando a
+                proposta educacional do projeto.
               </p>
             </div>
 
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {steps.map((step) => (
-                <div
-                  key={step.number}
-                  className="rounded-3xl border border-slate-200 p-7"
+            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {steps.map((step, index) => (
+                <article
+                  key={step.title}
+                  className="rounded-3xl border border-slate-200 bg-slate-50 p-6"
                 >
-                  <span className="text-sm font-bold text-emerald-700">
-                    {step.number}
-                  </span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 font-bold text-white">
+                    {index + 1}
+                  </div>
 
-                  <h3 className="mt-4 text-xl font-bold">{step.title}</h3>
+                  <h3 className="mt-5 text-lg font-bold">
+                    {step.title}
+                  </h3>
 
                   <p className="mt-3 leading-7 text-slate-600">
                     {step.description}
                   </p>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-3xl bg-slate-900 px-8 py-12 text-white md:px-12">
-            <div className="max-w-3xl">
-              <p className="font-semibold text-emerald-300">
-                Tecnologia e impacto social
-              </p>
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-8 sm:p-10">
+            <p className="font-semibold text-emerald-700">
+              Sobre o projeto
+            </p>
 
-              <h2 className="mt-3 text-3xl font-bold tracking-tight">
-                Um projeto educacional alinhado à ODS 10.
-              </h2>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight">
+              Projeto educacional de extensão universitária
+            </h2>
 
-              <p className="mt-5 leading-7 text-slate-300">
-                O Pinheiro Pets foi desenvolvido como projeto de extensão
-                universitária para explorar o uso da tecnologia na ampliação do
-                acesso à informação e da visibilidade de iniciativas locais
-                ligadas à proteção animal no Distrito Federal.
-              </p>
+            <p className="mt-4 max-w-3xl leading-7 text-slate-700">
+              Este sistema foi desenvolvido com fins acadêmicos para demonstrar
+              uma solução digital voltada à inclusão tecnológica de protetores,
+              ONGs e moradores interessados na causa animal no Distrito Federal.
+            </p>
 
-              <p className="mt-4 text-sm leading-6 text-slate-400">
-                Esta aplicação possui finalidade exclusivamente educacional e
-                demonstrativa e não representa um serviço oficial de proteção
-                animal.
-              </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/ongs"
+                className="rounded-xl bg-emerald-700 px-6 py-3 font-semibold text-white transition hover:bg-emerald-800"
+              >
+                Ver ONGs cadastradas
+              </Link>
+
+              <Link
+                href="/adocao"
+                className="rounded-xl border border-emerald-700 px-6 py-3 font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                Ver animais para adoção
+              </Link>
             </div>
           </div>
         </section>
